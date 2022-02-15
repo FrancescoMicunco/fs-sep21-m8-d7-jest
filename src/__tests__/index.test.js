@@ -1,7 +1,6 @@
 import { app } from '../app.js'
 import supertest from "supertest"
 import mongoose from "mongoose"
-
 import dotenv from "dotenv"
 dotenv.config()
 
@@ -29,7 +28,7 @@ describe("Testing the endpoints for our express app", () => {
         })
     })
 
-    it("should test that the /test endpoint returns a success message", async () => {
+    it("should test that the /test endpoint returns a success message", async() => {
         const response = await request.get("/test")
 
         expect(response.body.message).toBe("Test success!")
@@ -44,14 +43,14 @@ describe("Testing the endpoints for our express app", () => {
         name: "Invalid Product",
     }
 
-    it("should test that the POST /products doesnt work with wrong product data", async () => {
+    it("should test that the POST /products doesn't work with wrong product data", async() => {
         const response = await request.post("/products").send(invalidProduct)
 
         expect(response.status).toBe(400)
     })
 
     let createdProductId
-    it("should test that the POST /products actually creates a product", async () => {
+    it("should test that the POST /products actually creates a product", async() => {
         const response = await request.post("/products").send(validProduct)
 
         expect(response.body._id).toBeDefined()
@@ -59,17 +58,49 @@ describe("Testing the endpoints for our express app", () => {
         createdProductId = response.body._id
     })
 
-    it("should test that the GET /products/:id actually returns our product", async () => {
+    it("should test that the GET /products/:id actually returns our product", async() => {
         const response = await request.get(`/products/${createdProductId}`)
 
         expect(response.body.name).toBe(validProduct.name)
     })
 
-    it("should test that the GET /products/:id returns 404 on a non-existent product", async () => {
+    it("should test that the GET /products/:id returns 404 on a non-existent product", async() => {
         const response = await request.get("/products/123456123456123456123456")
 
         expect(response.status).toBe(404)
     })
+
+    // DELETE test
+
+    it("should test that the DELETE /products/:id returns 404 on a non-existent product", async() => {
+        const randomId = Math.floor(Math.random() * (20000000000 - 10000000201)) + 10000000201;
+        const response = await request.delete(`/products/${randomId}`)
+
+        expect(response.status).toBe(404)
+    })
+
+    it("should test that the DELETE /products/:id actually returns our product", async() => {
+        const response = await request.delete(`/products/${createdProductId}`)
+
+        expect(response.status).toBe(204)
+    })
+
+    //  PUT TEST
+
+    it("should test that the PUT /products/:id returns 404 on a non-existent product", async() => {
+        const randomId = Math.floor(Math.random() * (20000000000 - 10000000201)) + 10000000201;
+        const response = await request.put(`/products/${randomId}`)
+
+        expect(response.status).toBe(404)
+    })
+
+    it("should test that the PUT /products/:id actually returns our product", async() => {
+        const response = await request.put(`/products/${createdProductId}`)
+
+        expect(response.status).toBe(204)
+    })
+
+
 
     afterAll(done => {
         mongoose.connection.dropDatabase()
@@ -82,3 +113,16 @@ describe("Testing the endpoints for our express app", () => {
     })
 
 })
+
+
+// When retrieving the /products/:id endpoint:
+//  expect requests to be 404 with a non-existing id   OK
+//  expect requests to return the correct product with a valid id  OK
+// When deleting the /products/:id endpoint:
+//  expect successful 204 response code  OK
+//  expect 404 with a non-existing id   OK
+// When updating a /product/:id endpoint with new data:
+//  expect requests to be accepted.  
+//  expect 404 with a non-existing id
+// Expect the response.body.name to be changed
+// Expect the typeof name in response.body to be “string”
