@@ -80,10 +80,12 @@ describe("Testing the endpoints for our express app", () => {
     })
 
     it("should test that the DELETE /products/:id actually returns our product", async() => {
-        const response = await request.delete(`/products/${createdProductId}`)
+        const response = await request.delete(`/products/${product._Id}`)
 
         expect(response.status).toBe(204)
     })
+
+
 
     //  PUT TEST
 
@@ -97,8 +99,23 @@ describe("Testing the endpoints for our express app", () => {
     it("should test that the PUT /products/:id actually returns our product", async() => {
         const response = await request.put(`/products/${createdProductId}`)
 
-        expect(response.status).toBe(204)
+        expect(response.status).toBe(201)
     })
+
+    it("should test that the PUT /products/:id actually returns res.body.name changed", async() => {
+        const response = await request.put(`/products/${createdProductId}`)
+
+        expect(response.body.name).not.toBe(product.name)
+    })
+
+
+    it("should test that the PUT /products/:id actually returns res.body.name as a string", async() => {
+        const response = await request.put(`/products/${createdProductId}`)
+
+        expect(typeof response.body.name).toBe("string")
+    })
+
+
 
 
 
@@ -122,7 +139,7 @@ describe("Testing the endpoints for our express app", () => {
 //  expect successful 204 response code  OK
 //  expect 404 with a non-existing id   OK
 // When updating a /product/:id endpoint with new data:
-//  expect requests to be accepted.  
-//  expect 404 with a non-existing id
-// Expect the response.body.name to be changed
-// Expect the typeof name in response.body to be “string”
+//  expect requests to be accepted.  OK
+//  expect 404 with a non-existing id  OK
+//  expect the response.body.name to be changed  OK
+//  expect the typeof name in response.body to be “string”  OK
