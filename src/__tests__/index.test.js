@@ -80,7 +80,7 @@ describe("Testing the endpoints for our express app", () => {
     })
 
     it("should test that the DELETE /products/:id actually returns our product", async() => {
-        const response = await request.delete(`/products/${product._Id}`)
+        const response = await request.delete(`/products/${createdProductId}`)
 
         expect(response.status).toBe(204)
     })
@@ -91,7 +91,7 @@ describe("Testing the endpoints for our express app", () => {
 
     it("should test that the PUT /products/:id returns 404 on a non-existent product", async() => {
         const randomId = Math.floor(Math.random() * (20000000000 - 10000000201)) + 10000000201;
-        const response = await request.put(`/products/${randomId}`)
+        const response = await request.put(`/products/${randomId}`).send(validProduct)
 
         expect(response.status).toBe(404)
     })
